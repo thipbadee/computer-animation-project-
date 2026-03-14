@@ -15,13 +15,16 @@ Our tracker uses webcam input to count your repetitions automatically and gives 
 
 ## 🛠️ Getting Started (For Collaborators)
 
+### Prerequisites
+- Python 3.12
+
 ### 1. Clone & Setup
 ```bash
 git clone https://github.com/thipbadee/computer-animation-project-.git
 cd computer-animation-project-
 
 # Setup Virtual Environment
-python -m venv venv
+py -3.12 -m venv venv
 # Windows:
 venv\Scripts\activate
 # macOS/Linux:
