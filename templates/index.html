@@ -5,32 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Gym Tracker</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Google Fonts for Modern Typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div class="container">
-        
-        <!-- Header Section -->
         <header class="dashboard-header">
             <div class="logo">
-                <span class="icon">🏋️‍♂️</span>
+                <span class="icon">AI</span>
                 <h1>AI Gym <span>Tracker</span></h1>
             </div>
             <p class="subtitle">Real-time Pose Estimation & Auto-Counting</p>
         </header>
 
-        <!-- Main Dashboard Layout -->
         <main class="dashboard-grid">
-            
-            <!-- Video Stream Section -->
             <section class="video-section">
                 <div class="video-container glass-panel">
-                    <!-- The webcam stream provided by Flask -->
                     <img id="video-stream" src="{{ url_for('video_feed') }}" alt="Webcam Stream" />
-                    
-                    <!-- Loading overlay before camera starts -->
+
                     <div class="loading-overlay" id="loading-overlay">
                         <div class="spinner"></div>
                         <p>Initializing Camera...</p>
@@ -38,49 +30,69 @@
                 </div>
             </section>
 
-            <!-- Control Panel Section -->
             <section class="control-panel glass-panel">
                 <h2>Workout Controls</h2>
-                
+
                 <div class="control-group">
                     <label>Select Exercise</label>
                     <div class="exercise-selector">
-                        <button class="ex-btn active" onclick="setExercise('Bicep Curl', this)">💪 Bicep Curl</button>
-                        <button class="ex-btn" onclick="setExercise('Shoulder Press', this)">🚀 Shoulder Press</button>
+                        <button class="ex-btn active" onclick="setExercise('Bicep Curl', this)">Bicep Curl</button>
+                        <button class="ex-btn" onclick="setExercise('Shoulder Press', this)">Shoulder Press</button>
+                        <button class="ex-btn" onclick="setExercise('Squat', this)">Squat</button>
+                        <button class="ex-btn" onclick="setExercise('Plank', this)">Plank</button>
                     </div>
                 </div>
 
                 <div class="control-group action-buttons">
                     <button class="btn btn-primary" onclick="resetCounter()">
-                        <span class="btn-icon">🔄</span> Reset Counter
+                        <span class="btn-icon">Reset</span>
                     </button>
                 </div>
 
                 <div class="status-box">
                     <h3>Status</h3>
                     <p>Camera is <span class="status-indicator online">Online</span></p>
+                    <p>Current exercise: <span id="current-exercise-label">Bicep Curl</span></p>
                 </div>
             </section>
-
         </main>
     </div>
 
-    <!-- JavaScript to interact with Flask API -->
     <script>
-        // Once image loads, hide the spinner
         const img = document.getElementById('video-stream');
+        const exerciseLabel = document.getElementById('current-exercise-label');
         img.onload = function() {
             document.getElementById('loading-overlay').style.display = 'none';
+        };
+
+        function refreshVideoStream() {
+            img.src = "{{ url_for('video_feed') }}?t=" + Date.now();
         }
 
-        // Change the exercise mode on the backend
+        function setActiveButton(exerciseName) {
+            const buttons = document.querySelectorAll('.ex-btn');
+            buttons.forEach(btn => {
+                const isActive = btn.textContent.trim() === exerciseName;
+                btn.classList.toggle('active', isActive);
+            });
+        }
+
+        fetch('/current_exercise')
+            .then(response => response.json())
+            .then(data => {
+                exerciseLabel.textContent = data.exercise;
+                setActiveButton(data.exercise);
+                refreshVideoStream();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
         function setExercise(exerciseName, btnElement) {
-            // Update UI Active State
             const buttons = document.querySelectorAll('.ex-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
 
-            // Send to Flask
             fetch('/set_exercise', {
                 method: 'POST',
                 headers: {
@@ -89,21 +101,23 @@
                 body: JSON.stringify({ exercise: exerciseName }),
             })
             .then(response => response.json())
-            .then(data => {
-                console.log('Exercise changed to', exerciseName);
+            .then((data) => {
+                exerciseLabel.textContent = data.exercise || exerciseName;
+                refreshVideoStream();
+                console.log('Exercise changed to', data.exercise || exerciseName);
             })
             .catch((error) => {
                 console.error('Error:', error);
             });
         }
 
-        // Reset the reps
         function resetCounter() {
             fetch('/reset_counter', {
                 method: 'POST'
             })
             .then(response => response.json())
-            .then(data => {
+            .then(() => {
+                refreshVideoStream();
                 console.log('Counter Reset');
             })
             .catch((error) => {

@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import mediapipe as mp
-from exercises import BicepCurl, ShoulderPress
+from exercises import BicepCurl, Plank, ShoulderPress, Squat
 
 class VideoCamera(object):
     def __init__(self):
@@ -16,7 +16,9 @@ class VideoCamera(object):
         # Exercises Setup
         self.exercises_dict = {
             'Bicep Curl': BicepCurl(),
-            'Shoulder Press': ShoulderPress()
+            'Shoulder Press': ShoulderPress(),
+            'Squat': Squat(),
+            'Plank': Plank()
         }
         self.current_exercise_name = 'Bicep Curl'
         self.current_exercise = self.exercises_dict[self.current_exercise_name]
@@ -32,6 +34,9 @@ class VideoCamera(object):
 
     def reset_counter(self):
         self.current_exercise.reset()
+
+    def get_current_exercise_name(self):
+        return self.current_exercise_name
 
     def get_frame(self):
         success, frame = self.video.read()
@@ -99,7 +104,7 @@ class VideoCamera(object):
         bg_color = (20, 20, 20) # Dark gray glass
         
         # 1. Exercise Name Pill (Top Left)
-        draw_glass_pill(image, (20, 20), (280, 70), bg_color, 0.6)
+        draw_glass_pill(image, (20, 20), (360, 70), bg_color, 0.6)
         cv2.putText(image, self.current_exercise.name.upper(), (40, 52), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
 
@@ -107,9 +112,11 @@ class VideoCamera(object):
         draw_glass_pill(image, (420, 20), (620, 85), bg_color, 0.6)
         
         # Reps
-        cv2.putText(image, 'REPS', (440, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1, cv2.LINE_AA)
-        cv2.putText(image, str(ui_data.get('counter', self.current_exercise.counter)), (440, 75), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 136), 2, cv2.LINE_AA)
+        value_label = ui_data.get('display_label', 'REPS')
+        value_text = ui_data.get('display_value', str(ui_data.get('counter', self.current_exercise.counter)))
+        cv2.putText(image, value_label, (440, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1, cv2.LINE_AA)
+        cv2.putText(image, value_text, (440, 75), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 136), 2, cv2.LINE_AA)
         
         # Stage
         cv2.putText(image, 'STAGE', (520, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1, cv2.LINE_AA)
