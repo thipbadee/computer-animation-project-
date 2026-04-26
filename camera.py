@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import mediapipe as mp
-from exercises import BicepCurl, Plank, ShoulderPress, Squat
+from exercises import BicepCurl, HighKnees, Plank, ShoulderPress, Squat
 
 class VideoCamera(object):
     def __init__(self):
@@ -18,7 +18,8 @@ class VideoCamera(object):
             'Bicep Curl': BicepCurl(),
             'Shoulder Press': ShoulderPress(),
             'Squat': Squat(),
-            'Plank': Plank()
+            'Plank': Plank(),
+            'High Knees': HighKnees()
         }
         self.current_exercise_name = 'Bicep Curl'
         self.current_exercise = self.exercises_dict[self.current_exercise_name]
@@ -121,7 +122,7 @@ class VideoCamera(object):
         # Stage
         cv2.putText(image, 'STAGE', (520, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1, cv2.LINE_AA)
         stage_str = str(ui_data.get('stage', self.current_exercise.stage or '-')).upper()
-        stage_color = (0, 255, 136) if stage_str == 'UP' else (255, 100, 100)
+        stage_color = (0, 255, 136) if 'UP' in stage_str or stage_str == 'HOLD' else (255, 100, 100)
         cv2.putText(image, stage_str, (520, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.8, stage_color, 2, cv2.LINE_AA)
 
         # 3. Minimal Modern Gauge (Bottom Right)
