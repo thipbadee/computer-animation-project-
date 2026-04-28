@@ -37,3 +37,13 @@ instance/
 flask_session/
 *.sqlite3
 *.db
+
+# Generated project documents
+Computer_Animation_Project_Report.pdf
+Computer_Animation_Project_Report.docx
+Computer_Animation_Project_Presentation.pptx
+Computer_Animation_Project_Presentation_TH.pptx
+
+# Microsoft Office temporary files
+~$*.docx
+~$*.pptx

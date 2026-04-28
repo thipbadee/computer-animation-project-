@@ -1,7 +1,14 @@
 import cv2
 import numpy as np
 import mediapipe as mp
-from exercises import BicepCurl, HighKnees, Plank, ShoulderPress, Squat
+from exercises import (
+    BicepCurl,
+    DumbbellSideLateralRaise,
+    HighKnees,
+    Plank,
+    ShoulderPress,
+    Squat,
+)
 
 class VideoCamera(object):
     def __init__(self):
@@ -17,6 +24,7 @@ class VideoCamera(object):
         self.exercises_dict = {
             'Bicep Curl': BicepCurl(),
             'Shoulder Press': ShoulderPress(),
+            'Dumbbell Side Lateral Raise': DumbbellSideLateralRaise(),
             'Squat': Squat(),
             'Plank': Plank(),
             'High Knees': HighKnees()
@@ -106,8 +114,10 @@ class VideoCamera(object):
         
         # 1. Exercise Name Pill (Top Left)
         draw_glass_pill(image, (20, 20), (360, 70), bg_color, 0.6)
-        cv2.putText(image, self.current_exercise.name.upper(), (40, 52), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+        exercise_name = self.current_exercise.name.upper()
+        name_scale = 0.55 if len(exercise_name) > 22 else 0.8
+        cv2.putText(image, exercise_name, (40, 52),
+                    cv2.FONT_HERSHEY_SIMPLEX, name_scale, (255, 255, 255), 2, cv2.LINE_AA)
 
         # 2. Reps & Stage Box (Top Right)
         draw_glass_pill(image, (420, 20), (620, 85), bg_color, 0.6)

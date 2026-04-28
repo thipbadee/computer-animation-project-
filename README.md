@@ -7,7 +7,7 @@ Our tracker uses webcam input to count your repetitions automatically and gives 
 
 ## ✨ Features
 - ⚡ **Real-time Tracking:** Low-latency pose detection using Mediapipe.
-- 💪 **Multi-Exercise Support:** Toggle between **Bicep Curls** and **Shoulder Press**.
+- 💪 **Multi-Exercise Support:** Toggle between **Bicep Curls**, **Shoulder Press**, **Dumbbell Side Lateral Raise**, **Squat**, **Plank**, and **High Knees**.
 - 📊 **Visual Gauge:** A dynamic progress bar (0-100%) that tracks your form.
 - 🔢 **Automatic Counting:** Intelligently counts reps based on defined angle thresholds.
 
@@ -49,7 +49,7 @@ http://127.0.0.1:5000
 
 ## 🎮 Controls & Interface
 Everything is now controlled via a sleek web interface!
-- **Exercise Mode:** Click the buttons on the dashboard to switch between **Bicep Curls** and **Shoulder Press**.
+- **Exercise Mode:** Click the buttons on the dashboard to switch between all supported exercises, including **Dumbbell Side Lateral Raise**.
 - **Reset:** Click the "Reset Counter" button safely from your browser.
 - **Positioning:** Stand back so your upper body (shoulders to wrists) is visible in the web stream.
 
@@ -82,6 +82,7 @@ Everything is now controlled via a sleek web interface!
 | :--- | :--- | :--- | :--- |
 | **Bicep Curls** | Angle > 160° | Angle < 35° | Tracks the most bent arm |
 | **Shoulder Press** | Angle < 70° | Angle > 160° | Tracks the most extended arm |
+| **Dumbbell Side Lateral Raise** | Shoulder angle < 28° | Shoulder angle > 78° | Tracks the clearest arm while keeping the elbow mostly extended |
 
 ---
 

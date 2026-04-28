@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Gym Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container app-shell">
+        <header class="dashboard-header">
+            <div class="logo-block">
+                <p class="logo-kicker">Minimal Workout Tracker</p>
+                <h1>AI Gym Tracker</h1>
+            </div>
+            <div class="header-badge">
+                <span class="status-dot"></span>
+                <span>Camera guided workout</span>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <section class="video-panel panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="section-kicker">Live Session</p>
+                        <h2>Camera View</h2>
+                    </div>
+                    <div class="panel-actions">
+                        <a class="ghost-button ghost-link" href="{{ url_for('how_to_use') }}">How To Use</a>
+                        <a class="ghost-button ghost-link" href="{{ url_for('index') }}">Back to Home</a>
+                    </div>
+                </div>
+
+                <div class="video-frame">
+                    <img id="video-stream" src="" alt="Webcam Stream" />
+
+                    <div class="loading-overlay" id="loading-overlay">
+                        <div class="spinner"></div>
+                        <p>Initializing camera...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="sidebar-panel">
+                <section class="panel">
+                    <div class="panel-heading compact">
+                        <div>
+                            <p class="section-kicker">Controls</p>
+                            <h2>Select Exercise</h2>
+                        </div>
+                    </div>
+
+                    <div class="exercise-selector">
+                        <button class="ex-btn active" onclick="setExercise('Bicep Curl', this)">Bicep Curl</button>
+                        <button class="ex-btn" onclick="setExercise('Shoulder Press', this)">Shoulder Press</button>
+                        <button class="ex-btn" onclick="setExercise('Dumbbell Side Lateral Raise', this)">Dumbbell Side Lateral Raise</button>
+                        <button class="ex-btn" onclick="setExercise('Squat', this)">Squat</button>
+                        <button class="ex-btn" onclick="setExercise('Plank', this)">Plank</button>
+                        <button class="ex-btn" onclick="setExercise('High Knees', this)">High Knees</button>
+                    </div>
+
+                    <div class="action-row">
+                        <button class="primary-button" type="button" onclick="resetCounter()">Reset Counter</button>
+                    </div>
+                </section>
+
+                <section class="panel status-card">
+                    <p class="section-kicker">Status</p>
+                    <h2>Session Info</h2>
+                    <div class="status-line">
+                        <span>Camera</span>
+                        <span class="status-pill">Online</span>
+                    </div>
+                    <div class="status-line">
+                        <span>Current exercise</span>
+                        <strong id="current-exercise-label">Bicep Curl</strong>
+                    </div>
+                </section>
+
+                <section class="panel exercise-guide">
+                    <div class="guide-header">
+                        <div>
+                            <p class="section-kicker">Exercise Guide</p>
+                            <h2 id="exercise-guide-title">Bicep Curl</h2>
+                        </div>
+                    </div>
+
+                    <div class="guide-image-wrap">
+                        <img id="exercise-guide-image" src="" alt="Exercise reference for Bicep Curl" />
+                    </div>
+
+                    <p id="exercise-guide-description" class="guide-description"></p>
+                    <ul id="exercise-guide-steps" class="guide-steps"></ul>
+                    <p class="guide-credit">
+                        Image source:
+                        <a id="exercise-guide-source" href="#" target="_blank" rel="noreferrer noopener">Wikimedia Commons</a>
+                    </p>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const img = document.getElementById('video-stream');
+        const exerciseLabel = document.getElementById('current-exercise-label');
+        const guideTitle = document.getElementById('exercise-guide-title');
+        const guideImage = document.getElementById('exercise-guide-image');
+        const guideDescription = document.getElementById('exercise-guide-description');
+        const guideSteps = document.getElementById('exercise-guide-steps');
+        const guideSource = document.getElementById('exercise-guide-source');
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        const exerciseGuideData = {
+            'Bicep Curl': {
+                title: 'Bicep Curl',
+                imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Exercise_Bicep_Curls.png',
+                sourceUrl: 'https://commons.wikimedia.org/wiki/File:Exercise_Bicep_Curls.png',
+                sourceLabel: 'Wikimedia Commons - Exercise Bicep Curls',
+                description: 'Hold the dumbbells by your sides, keep your upper arms steady, and curl the weights toward your shoulders before lowering with control.',
+                steps: [
+                    'Start with arms extended by your sides.',
+                    'Curl upward by bending the elbows without swinging.',
+                    'Lower slowly back to the start position.'
+                ]
+            },
+            'Shoulder Press': {
+                title: 'Shoulder Press',
+                imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dumbbell-shoulder-press-1.png',
+                sourceUrl: 'https://commons.wikimedia.org/wiki/File:Dumbbell-shoulder-press-1.png',
+                sourceLabel: 'Wikimedia Commons - Dumbbell Shoulder Press',
+                description: 'Begin with the weights near shoulder level, press upward until the arms extend overhead, then return to the starting position in control.',
+                steps: [
+                    'Bring dumbbells to shoulder height.',
+                    'Press upward in a straight vertical path.',
+                    'Lower back down without dropping the elbows.'
+                ]
+            },
+            'Dumbbell Side Lateral Raise': {
+                title: 'Dumbbell Side Lateral Raise',
+                imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/TEB_Lateral_Arm_Raises.png',
+                sourceUrl: 'https://commons.wikimedia.org/wiki/File:TEB_Lateral_Arm_Raises.png',
+                sourceLabel: 'Wikimedia Commons - TEB Lateral Arm Raises',
+                description: 'Lift both arms out to the sides until they reach around shoulder height, keep the elbows softly bent, and lower back down smoothly.',
+                steps: [
+                    'Stand tall with dumbbells beside the hips.',
+                    'Raise both arms sideways to shoulder height.',
+                    'Control the descent back to the start position.'
+                ]
+            },
+            'Squat': {
+                title: 'Squat',
+                imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Squats.svg',
+                sourceUrl: 'https://commons.wikimedia.org/wiki/File:Squats.svg',
+                sourceLabel: 'Wikimedia Commons - Squats',
+                description: 'Stand with your feet planted, sit the hips down and back, then drive through the legs to return to a tall standing posture.',
+                steps: [
+                    'Keep the chest up and feet stable.',
+                    'Bend the knees and hips to lower the body.',
+                    'Push back up to standing with control.'
+                ]
+            },
+            'Plank': {
+                title: 'Plank',
+                imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Plank_exercise.svg',
+                sourceUrl: 'https://commons.wikimedia.org/wiki/File:Plank_exercise.svg',
+                sourceLabel: 'Wikimedia Commons - Plank Exercise',
+                description: 'Hold the body in a straight line from shoulders to ankles and keep the core engaged without letting the hips sag or rise too high.',
+                steps: [
+                    'Place forearms or hands firmly on the floor.',
+                    'Keep shoulders, hips, and ankles aligned.',
+                    'Hold steady while maintaining a tight core.'
+                ]
+            },
+            'High Knees': {
+                title: 'High Knees',
+                imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/High_knees.gif',
+                sourceUrl: 'https://commons.wikimedia.org/wiki/File:High_knees.gif',
+                sourceLabel: 'Wikimedia Commons - High knees',
+                description: 'Run in place with a quick rhythm while driving the knees upward and keeping the torso balanced and active.',
+                steps: [
+                    'Stay light on the feet and keep the core braced.',
+                    'Lift the knees high in an alternating rhythm.',
+                    'Use the arms naturally to support the movement.'
+                ]
+            }
+        };
+
+        img.onload = function() {
+            loadingOverlay.style.display = 'none';
+        };
+
+        function renderExerciseGuide(exerciseName) {
+            const exercise = exerciseGuideData[exerciseName];
+            if (!exercise) {
+                return;
+            }
+
+            guideTitle.textContent = exercise.title;
+            guideImage.src = exercise.imageUrl;
+            guideImage.alt = `Exercise reference for ${exercise.title}`;
+            guideDescription.textContent = exercise.description;
+            guideSource.href = exercise.sourceUrl;
+            guideSource.textContent = exercise.sourceLabel;
+
+            guideSteps.innerHTML = '';
+            exercise.steps.forEach((step) => {
+                const li = document.createElement('li');
+                li.textContent = step;
+                guideSteps.appendChild(li);
+            });
+        }
+
+        function refreshVideoStream() {
+            img.src = "{{ url_for('video_feed') }}?t=" + Date.now();
+        }
+
+        function setActiveButton(exerciseName) {
+            const buttons = document.querySelectorAll('.ex-btn');
+            buttons.forEach(btn => {
+                const isActive = btn.textContent.trim() === exerciseName;
+                btn.classList.toggle('active', isActive);
+            });
+        }
+
+        function loadCurrentExercise() {
+            fetch('/current_exercise')
+                .then(response => response.json())
+                .then(data => {
+                    exerciseLabel.textContent = data.exercise;
+                    setActiveButton(data.exercise);
+                    renderExerciseGuide(data.exercise);
+                    refreshVideoStream();
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function setExercise(exerciseName, btnElement) {
+            const buttons = document.querySelectorAll('.ex-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            fetch('/set_exercise', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ exercise: exerciseName }),
+            })
+            .then(response => response.json())
+            .then((data) => {
+                const selectedExercise = data.exercise || exerciseName;
+                exerciseLabel.textContent = selectedExercise;
+                renderExerciseGuide(selectedExercise);
+                loadingOverlay.style.display = 'flex';
+                refreshVideoStream();
+                console.log('Exercise changed to', selectedExercise);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function resetCounter() {
+            fetch('/reset_counter', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(() => {
+                loadingOverlay.style.display = 'flex';
+                refreshVideoStream();
+                console.log('Counter Reset');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        renderExerciseGuide('Bicep Curl');
+        loadCurrentExercise();
+    </script>
+</body>
+</html>

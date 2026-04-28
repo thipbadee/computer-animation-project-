@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How To Use - AI Gym Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container guide-page-shell">
+        <header class="guide-page-header">
+            <div class="logo-block">
+                <p class="logo-kicker">AI Gym Tracker</p>
+                <h1>How To Use</h1>
+            </div>
+            <div class="page-nav">
+                <a class="ghost-button ghost-link" href="{{ url_for('index') }}">Back to Home</a>
+                <a class="start-button start-link compact-start" href="{{ url_for('workout') }}">Start Workout</a>
+            </div>
+        </header>
+
+        <main class="guide-layout">
+            <section class="panel guide-intro-card">
+                <p class="section-kicker">Quick Start</p>
+                <h2>Use the system in 4 simple steps</h2>
+                <p class="guide-description intro-copy">
+                    This page explains how to set up your camera, choose an exercise, and use the tracker correctly
+                    so the counter and movement feedback work as expected.
+                </p>
+            </section>
+
+            <section class="guide-steps-grid">
+                <article class="panel how-card">
+                    <span class="step-badge">1</span>
+                    <h3>Open the workout page</h3>
+                    <p>Start from the home screen and press <strong>Start Your Exercise</strong> to enter the live tracking page.</p>
+                </article>
+
+                <article class="panel how-card">
+                    <span class="step-badge">2</span>
+                    <h3>Position yourself clearly</h3>
+                    <p>Stand far enough from the camera so the important joints for the selected exercise are visible in the frame.</p>
+                </article>
+
+                <article class="panel how-card">
+                    <span class="step-badge">3</span>
+                    <h3>Select an exercise</h3>
+                    <p>Use the exercise buttons on the right panel. The guide image and short instructions will update automatically.</p>
+                </article>
+
+                <article class="panel how-card">
+                    <span class="step-badge">4</span>
+                    <h3>Follow the motion guide</h3>
+                    <p>Perform the movement while watching the live camera feedback, rep counter, stage label, and reference image.</p>
+                </article>
+            </section>
+
+            <section class="guide-details-grid">
+                <article class="panel detail-card">
+                    <p class="section-kicker">Before You Start</p>
+                    <h2>Checklist</h2>
+                    <ul class="guide-steps">
+                        <li>Make sure your camera is allowed and working.</li>
+                        <li>Use a bright area so your body landmarks are easier to detect.</li>
+                        <li>Wear clothing that makes your arm and leg movement visible.</li>
+                        <li>Keep enough space around you for safe movement.</li>
+                    </ul>
+                </article>
+
+                <article class="panel detail-card">
+                    <p class="section-kicker">During Exercise</p>
+                    <h2>Best Practice</h2>
+                    <ul class="guide-steps">
+                        <li>Keep your movement controlled instead of rushing the repetitions.</li>
+                        <li>Try to match the general shape shown in the exercise guide image.</li>
+                        <li>If the counter is inaccurate, step back slightly and re-center your body.</li>
+                        <li>Use the <strong>Reset Counter</strong> button when starting a new set.</li>
+                    </ul>
+                </article>
+            </section>
+
+            <section class="guide-exercise-list panel">
+                <p class="section-kicker">Supported Exercises</p>
+                <h2>Available in this project</h2>
+                <div class="exercise-pill-grid">
+                    <span class="exercise-pill">Bicep Curl</span>
+                    <span class="exercise-pill">Shoulder Press</span>
+                    <span class="exercise-pill">Dumbbell Side Lateral Raise</span>
+                    <span class="exercise-pill">Squat</span>
+                    <span class="exercise-pill">Plank</span>
+                    <span class="exercise-pill">High Knees</span>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
