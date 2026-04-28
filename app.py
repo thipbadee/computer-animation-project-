@@ -26,8 +26,12 @@ def gen(camera_instance):
 @app.route('/video_feed')
 def video_feed():
     cam = get_camera()
-    return Response(gen(cam),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+    response = Response(gen(cam),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/set_exercise', methods=['POST'])
 def set_exercise():
@@ -36,8 +40,13 @@ def set_exercise():
     if exercise_name:
         cam = get_camera()
         cam.set_exercise(exercise_name)
-        return jsonify(success=True)
+        return jsonify(success=True, exercise=cam.get_current_exercise_name())
     return jsonify(success=False), 400
+
+@app.route('/current_exercise')
+def current_exercise():
+    cam = get_camera()
+    return jsonify(exercise=cam.get_current_exercise_name())
 
 @app.route('/reset_counter', methods=['POST'])
 def reset_counter():
