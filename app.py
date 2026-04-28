@@ -16,6 +16,14 @@ def get_camera():
 def index():
     return render_template('index.html')
 
+@app.route('/workout')
+def workout():
+    return render_template('workout.html')
+
+@app.route('/how-to-use')
+def how_to_use():
+    return render_template('how_to_use.html')
+
 def gen(camera_instance):
     while True:
         frame = camera_instance.get_frame()
