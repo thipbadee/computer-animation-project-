@@ -2,3 +2,6 @@ Flask
 opencv-python
 mediapipe==0.10.14
 numpy
+Pillow
+python-pptx
+python-docx
