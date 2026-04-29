@@ -88,41 +88,151 @@ Interpretation:
 
 ## How to Run
 
-Install dependencies:
+Prerequisite:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run the live web application:
+The detailed execution paths are listed in the `Run Guide` below. In practice, most users will choose one of these modes:
+- `web`: live webcam application
+- `benchmark`: reproducible baseline-versus-proposed experiment
+- `demo`: synthetic side-by-side video generation
+- `tests`: unit-test verification
+- `collect_mocap` + `evaluate_recorded_sequence`: real-data capture and replay pipeline
+
+## Run Guide
+
+Use the project in one of the following four ways, depending on your goal.
+
+### 1. Live Web Demo
+
+Purpose:
+- run the real-time webcam application
+- interact with the UI and switch between supported exercises
+
+Commands:
 
 ```bash
 python src/main.py --mode web
 ```
 
-Open in a browser:
+Then open:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-Run the scaling benchmark:
+Typical steps:
+1. Start the command above.
+2. Open the browser at `http://127.0.0.1:5000`.
+3. Go to `/workout`.
+4. Select an exercise from the right-side panel.
+5. Perform the motion while watching the live overlay for `count`, `stage`, and `progress`.
+
+### 2. Reproducible Benchmark
+
+Purpose:
+- compare the `baseline` and `proposed` methods on synthetic bicep-curl sequences
+- regenerate the runtime and stability numbers used in the report
+
+Command:
 
 ```bash
 python src/main.py --mode benchmark
 ```
 
-Generate the side-by-side synthetic demo video:
+Outputs:
+- `experiments/results/runtime.csv`
+- `experiments/results/plots.png`
+
+Typical steps:
+1. Run the benchmark command.
+2. Wait for the benchmark to finish.
+3. Open `runtime.csv` for numeric results.
+4. Open `plots.png` for the summary figure used in the report and presentation.
+
+### 3. Synthetic Demo Video
+
+Purpose:
+- generate a side-by-side visual comparison between `baseline` and `proposed`
+- produce a reproducible demo artifact without requiring a live camera
+
+Command:
 
 ```bash
 python src/main.py --mode demo
 ```
 
-Run the unit tests:
+Output:
+- `demo/synthetic_bicep_curl.mp4`
+
+Typical steps:
+1. Run the demo command.
+2. Open `demo/synthetic_bicep_curl.mp4`.
+3. Use the video as supporting evidence in the report or slide deck.
+
+### 4. Real-Data Capture and Replay
+
+Purpose:
+- record a real webcam landmark sequence
+- replay the saved sequence through the `baseline` and `proposed` bicep-curl trackers
+
+Step 1: record a sequence
+
+```bash
+python tools/collect_mocap.py --output data/mocap/recorded_arm_sequence.csv
+```
+
+How to record:
+1. Stand so the camera can clearly see your shoulder, elbow, and wrist.
+2. Perform the `Bicep Curl` exercise.
+3. Complete the intended number of repetitions, such as `10`.
+4. Press `q` to stop recording.
+
+Step 2: evaluate the recorded sequence
+
+```bash
+python experiments/evaluate_recorded_sequence.py data/mocap/recorded_arm_sequence.csv --expected-reps 10
+```
+
+What this reports:
+- predicted repetition count for `baseline`
+- predicted repetition count for `proposed`
+- side switches for both methods
+- count error, if `--expected-reps` is supplied
+
+Important note:
+- the current real-data evaluation pipeline is designed for `Bicep Curl`
+- other live exercise modes in the Flask app are not yet supported by `evaluate_recorded_sequence.py`
+
+### 5. Unit Tests
+
+Purpose:
+- verify that the benchmark-side tracking logic still behaves as expected
+
+Command:
 
 ```bash
 python -m unittest tests.test_simulation
 ```
+
+### Recommended Execution Order
+
+For a quick product demo:
+1. `pip install -r requirements.txt`
+2. `python src/main.py --mode web`
+
+For report regeneration:
+1. `python src/main.py --mode benchmark`
+2. `python src/main.py --mode demo`
+3. `python scripts/generate_submission_assets.py`
+4. `python scripts/generate_report_docx.py`
+5. `python scripts/generate_presentation.py`
+
+For real-data evaluation:
+1. `python tools/collect_mocap.py --output data/mocap/recorded_arm_sequence.csv`
+2. `python experiments/evaluate_recorded_sequence.py data/mocap/recorded_arm_sequence.csv --expected-reps 10`
 
 ## Live Web Application
 
