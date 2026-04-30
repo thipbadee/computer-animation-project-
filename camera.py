@@ -52,6 +52,9 @@ class VideoCamera(object):
         if not success:
             return None
 
+        # Present the webcam feed in a non-mirrored orientation on the web UI.
+        frame = cv2.flip(frame, 1)
+
         # ReColor Image to RGB
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
