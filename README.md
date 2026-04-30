@@ -1,4 +1,5 @@
 # Real-Time Exercise Motion Tracking for Computer Animation
+github -> https://github.com/thipbadee/computer-animation-project-
 
 This repository contains a real-time pose-driven exercise tracking project built with Python, Flask, OpenCV, and MediaPipe. The project was organized for a `Computer Animation` course submission and is centered on a reproducible comparison between a simple `baseline` tracker and a more stable `proposed` tracker for bicep-curl motion analysis, while also providing a live web demo for multiple exercise modes.
 
